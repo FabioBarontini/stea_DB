@@ -47,8 +47,8 @@ declare
 begin
   if q = '' then raise exception 'Query vuota'; end if;
   if q ~ ';' then raise exception 'Per sicurezza è consentita una sola istruzione SQL alla volta'; end if;
-  if q !~* '^(select|with)' then raise exception 'Sono consentite solo query SELECT o WITH'; end if;
-  if q ~* '(insert|update|delete|drop|alter|create|truncate|grant|revoke|copy|vacuum|analyze|refresh|comment|call|do)'
+  if q !~* '^(select|with)([[:space:]]|$)' then raise exception 'Sono consentite solo query SELECT o WITH'; end if;
+  if q ~* '(^|[^[:alnum:]_])(insert|update|delete|drop|alter|create|truncate|grant|revoke|copy|vacuum|analyze|refresh|comment|call|do)([^[:alnum:]_]|$)'
     then raise exception 'La query contiene un''operazione non consentita'; end if;
   execute format(
     'select coalesce(jsonb_agg(to_jsonb(qr)), ''[]''::jsonb) from (%s) qr', q
